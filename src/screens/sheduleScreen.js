@@ -6,6 +6,43 @@ import {Text, View, ScrollView, TouchableOpacity} from 'react-native';
 
 const weekDays = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 
+const RenderWeekDays = props => {
+  const {week} = props;
+  const isDayOff = dayNumber => dayNumber === 5 || dayNumber === 6;
+  if (week && week !== undefined) {
+    return week.map((item, index) => (
+      <View style={styles.weekWrap}>
+        <View style={styles.weekDayNameBlock}>
+          <Text
+            style={[
+              {fontSize: 18},
+              isDayOff(index) ? {color: '#f10404'} : {color: '#207bc3'},
+            ]}>
+            {weekDays[index]}
+          </Text>
+        </View>
+        <View style={styles.weekDayDescriptionBlock}>
+          <Text style={styles.weekDayDescriptionDay}>День {item.id}</Text>
+          <Text style={styles.weekDayDescriptionExercise}>
+            {item.exercises && item.exercises.length > 0
+              ? `${item.exercises.length} упражнений`
+              : 'Отсутствуют'}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.weekDayBtnShowDay}
+          onPress={() => {
+            props.navigation.navigate('ShowDayScreen', {
+              dayNumber: item.id,
+            });
+          }}>
+          <Text style={styles.weekDayBtnShowDayTxt}>Просмотр</Text>
+        </TouchableOpacity>
+      </View>
+    ));
+  }
+};
+
 class SheduleScreen extends React.Component {
   static navigationOptions = {
     title: 'График',
@@ -42,43 +79,6 @@ class SheduleScreen extends React.Component {
     return arr.slice(indexStart, indexEnd);
   }
 
-  renderWeekDays(week) {
-    if (week && week !== undefined) {
-      return week.map((item, index) => (
-        <View style={styles.weekWrap}>
-          <View style={styles.weekDayNameBlock}>
-            <Text
-              style={[
-                {fontSize: 18},
-                index + 1 == 6 || index + 1 == 7
-                  ? {color: '#f10404'}
-                  : {color: '#207bc3'},
-              ]}>
-              {weekDays[index]}
-            </Text>
-          </View>
-          <View style={styles.weekDayDescriptionBlock}>
-            <Text style={styles.weekDayDescriptionDay}>День {item.id}</Text>
-            <Text style={styles.weekDayDescriptionExercise}>
-              {item.exercises && item.exercises.length > 0
-                ? `${item.exercises.length} упражнений`
-                : 'Отсутствуют'}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.weekDayBtnShowDay}
-            onPress={() => {
-              this.props.navigation.navigate('ShowDayScreen', {
-                dayNumber: item.id,
-              });
-            }}>
-            <Text style={styles.weekDayBtnShowDayTxt}>Просмотр</Text>
-          </TouchableOpacity>
-        </View>
-      ));
-    }
-  }
-
   async componentDidMount() {
     await this.props.getAllDays();
     this.setState({
@@ -95,20 +95,22 @@ class SheduleScreen extends React.Component {
           <Text style={styles.weekTitleTxt}>1 Неделя</Text>
         </View>
         <View style={styles.weekContainer}>
-          {this.renderWeekDays(this.state.firstWeek)}
+          <RenderWeekDays
+            week={this.state.firstWeek}
+            navigation={this.props.navigation}
+          />
         </View>
         <View style={styles.weekTitleBlock}>
           <Text style={styles.weekTitleTxt}>2 Неделя</Text>
         </View>
         <View style={styles.weekContainer}>
-          {this.renderWeekDays(this.state.secondWeek)}
+          <RenderWeekDays week={this.state.secondWeek} />
         </View>
-
         <View style={styles.weekTitleBlock}>
           <Text style={styles.weekTitleTxt}>3 Неделя</Text>
         </View>
         <View style={styles.weekContainer}>
-          {this.renderWeekDays(this.state.thirdWeek)}
+          <RenderWeekDays week={this.state.thirdWeek} />
         </View>
       </ScrollView>
     ) : null;

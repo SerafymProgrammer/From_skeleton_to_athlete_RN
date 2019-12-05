@@ -7,6 +7,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
 
+  blockWrapNumberOfRepetitions: {
+    marginTop: 20,
+    marginLeft: 20,
+    flexDirection: 'row'
+  },
+
   blockLable: {
     fontSize: 18,
     marginBottom: 5,

@@ -5,6 +5,31 @@ import styles from '../styles/showDayScreenStyle';
 import {Text, View, ScrollView, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-navigation';
 
+const RenderExercisesColumn = props => {
+  const isOdd = number => (number + 1) % 2 === 0;
+  const {exercises, isRightOrLeft} = props;
+  if (exercises && exercises !== undefined && exercises.length > 0) {
+    const renderColumn = exercises.filter((item, i) =>
+      isRightOrLeft ? !isOdd(i) : isOdd(i),
+    );
+    return renderColumn.map((item, index) => (
+      <View>
+        <View style={styles.exerciseWrap}>
+          <View style={styles.exerciseAvatar}></View>
+          {item.doubleSet ? <Text style={styles.doubleSetStar}>*</Text> : null}
+          <View style={styles.exerciseNameWrap}>
+            <Text style={styles.exerciseNameTxt}>{item.name[0]}</Text>
+          </View>
+          <Text style={styles.exerciseNumberOfRepetitions}>
+            {item.numberOfRepetitions}
+          </Text>
+        </View>
+      </View>
+    ));
+  }
+  return null;
+};
+
 class ShowDayScreen extends React.Component {
   static navigationOptions = {
     title: 'Просмотр дня',
@@ -23,52 +48,6 @@ class ShowDayScreen extends React.Component {
     this.state = {};
   }
 
-  renderExercisesFirstColumn(exercises) {
-    if (exercises && exercises !== undefined && exercises.length > 0) {
-      return exercises.map((item, index) => (
-        <View>
-          {(index + 1) % 2 !== 0 ? (
-            <View style={styles.exerciseWrap}>
-              <View style={styles.exerciseAvatar}></View>
-              {item.doubleSet ? (
-                <Text style={styles.doubleSetStar}>*</Text>
-              ) : null}
-              <View style={styles.exerciseNameWrap}>
-                <Text style={styles.exerciseNameTxt}>{item.name[0]}</Text>
-              </View>
-              <Text style={styles.exerciseNumberOfRepetitions}>
-                {item.numberOfRepetitions}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-      ));
-    }
-  }
-
-  renderExercisesSecondColumn(exercises) {
-    if (exercises && exercises !== undefined && exercises.length > 0) {
-      return exercises.map((item, index) => (
-        <View>
-          {(index + 1) % 2 == 0 ? (
-            <View style={styles.exerciseWrap}>
-              <View style={styles.exerciseAvatar}></View>
-              {item.doubleSet ? (
-                <Text style={styles.doubleSetStar}>*</Text>
-              ) : null}
-              <View style={styles.exerciseNameWrap}>
-                <Text style={styles.exerciseNameTxt}>{item.name[0]}</Text>
-              </View>
-              <Text style={styles.exerciseNumberOfRepetitions}>
-                {item.numberOfRepetitions}
-              </Text>
-            </View>
-          ) : null}
-        </View>
-      ));
-    }
-  }
-
   async componentDidMount() {
     await this.props.getOneDay(this.props.navigation.state.params.dayNumber);
   }
@@ -82,14 +61,16 @@ class ShowDayScreen extends React.Component {
         <ScrollView>
           <View style={styles.exercisesContainer}>
             <View style={styles.exercisesColumnContainer}>
-              {this.renderExercisesFirstColumn(
-                this.props.selectedDay.exercises,
-              )}
+              <RenderExercisesColumn
+                exercises={this.props.selectedDay.exercises}
+                isRightOrLeft={true}
+              />
             </View>
             <View style={styles.exercisesColumnContainer}>
-              {this.renderExercisesSecondColumn(
-                this.props.selectedDay.exercises,
-              )}
+              <RenderExercisesColumn
+                exercises={this.props.selectedDay.exercises}
+                isRightOrLeft={false}
+              />
             </View>
           </View>
         </ScrollView>

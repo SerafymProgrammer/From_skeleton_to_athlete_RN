@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
 import {width} from 'react-native-dimension';
@@ -85,7 +86,7 @@ class AddExerciseScreen extends React.Component {
       doubleSet,
     } = this.state;
     if (!dayNumber || !exerciseName || !numberOfRepetitions) {
-      alert('Все поля должны быть заполнены');
+      Alert.alert('Все поля должны быть заполнены!');
       return false;
     }
     return true;
@@ -117,7 +118,7 @@ class AddExerciseScreen extends React.Component {
             />
           </View>
 
-          <View style={[styles.blockWrap, {flexDirection: 'row'}]}>
+          <View style={styles.blockWrapNumberOfRepetitions}>
             <View>
               <Text style={styles.blockLable}>Количество повторений</Text>
               <TextInput
@@ -131,7 +132,11 @@ class AddExerciseScreen extends React.Component {
             </View>
             <TouchableOpacity
               style={styles.doubleSetToggleBtn}
-              onPress={() => this.setState({doubleSet: !this.state.doubleSet})}>
+              onPress={() =>
+                this.setState(state => {
+                  return {doubleSet: !state.doubleSet};
+                })
+              }>
               <Text
                 style={
                   this.state.doubleSet ? {color: '#45ad78'} : {color: '#000'}
@@ -143,7 +148,7 @@ class AddExerciseScreen extends React.Component {
 
           <TouchableOpacity
             onPress={() => this.saveExercise()}
-            disabled={this.state.disabledSaveBtn ? true : false}
+            disabled={this.state.disabledSaveBtn}
             style={styles.newExerciseSaveBtn}>
             <Text>Сохранить</Text>
           </TouchableOpacity>
@@ -168,7 +173,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(AddExerciseScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(AddExerciseScreen);
